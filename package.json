@@ -1,0 +1,22 @@
+{
+  "name": "gulp-seajs-dot",
+  "description": "dot模板引擎转seajs module",
+  "version": "1.0.2",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/homkai/gulp-seajs-dot.git"
+  },
+  "author": {
+    "name": "Homkai Wang"
+  },
+  "license": "MIT",
+  "files": [
+    "index.js"
+  ],
+  "dependencies": {
+    "dot": "^1.0.3",
+    "gulp-util": "^3.0.6",
+    "through2": "^2.0.0",
+    "html-minifier": "^0.7.2"
+  }
+}
