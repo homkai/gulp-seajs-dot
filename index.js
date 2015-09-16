@@ -2,7 +2,7 @@ var Through = require('through2');
 var Util = require('gulp-util');
 var Dot = require('dot');
 var Path = require('path');
-var Htmlmin = require('html-minifier');
+var HtmlMinifier = require('html-minifier');
 
 const PLUGIN_NAME = 'gulp-seajs-dot';
 
@@ -17,12 +17,12 @@ function readStream(stream, done) {
 	});
 }
 
-function compile(contents, moduleId){
+function compile(contents, moduleId, options){
 
 	// 先删掉注释
 	contents = contents.replace(/<!--[\w\W\r\n]*?-->/gmi, '');
 
-	var regStart = /(<script.*?id=["'](.*?)["'].*?type=["']text\/template["'].*?>|<script.*?type=["']text\/template["'].*?id=["'](.*?)["'].*?>)/i;
+	var regStart = /(<script.*?export=["'](.*?)["'].*?type=["']text\/template["'].*?>|<script.*?type=["']text\/template["'].*?export=["'](.*?)["'].*?>)/i;
 	var regRepAll = /(<script.*?type=["']text\/template["'].*?>)/ig;
 
 	function getChildId(child){
@@ -37,7 +37,9 @@ function compile(contents, moduleId){
 	var output = [];
 	if(!regStart.test(contents)){
 		// 如果没有指定模板，则按普通html整体暴露
-		output.push("  module.exports = '" + Htmlmin.minify(getChildCode(contents), {collapseWhitespace: true}).replace(/[']/g, "\\'") + "'");
+		var htmlMinifierOption = options.htmlMinifier || {};
+		htmlMinifierOption.collapseWhitespace = true;
+		output.push("  module.exports = '" + HtmlMinifier.minify(getChildCode(contents), htmlMinifierOption).replace(/[']/g, "\\'") + "'");
 	}else{
 		var input = contents.replace(regRepAll, '|###|$1').split('|###|').slice(1);
 		input.forEach(function(item){
@@ -47,9 +49,9 @@ function compile(contents, moduleId){
 		});
 	}
 
-	return "define('" + moduleId + "', function(require, exports, module){\n" +
-		output.join('\n') +
-		"\n});";
+	return "define('" + moduleId + "', function(require, exports, module){\r\n" +
+		output.join('\r\n') +
+		"\r\n});";
 }
 
 module.exports = function (options) {
@@ -63,7 +65,7 @@ module.exports = function (options) {
 			}
 			try {
 				var moduleId = file.path.replace(file.base, '').replace(Path.extname(file.path), '').replace(Path.sep, '/' + (options.prefix || ''));
-				file.contents = new Buffer(compile(contents, moduleId));
+				file.contents = new Buffer(compile(contents, moduleId, options));
 				this.push(file);
 				return callback();
 			}

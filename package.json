@@ -1,7 +1,7 @@
 {
   "name": "gulp-seajs-dot",
   "description": "dot模板引擎转seajs module",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/homkai/gulp-seajs-dot.git"
