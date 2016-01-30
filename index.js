@@ -17,7 +17,7 @@ function readStream(stream, done) {
 	});
 }
 
-function compile(contents, moduleId, options){
+function compile(contents, options){
 
 	// 先删掉注释
 	contents = contents.replace(/<!--[\w\W\r\n]*?-->/gmi, '');
@@ -49,7 +49,7 @@ function compile(contents, moduleId, options){
 		});
 	}
 
-	return "define('" + moduleId + "', function(require, exports, module){\r\n" +
+	return "define(function(require, exports, module){\r\n" +
 		output.join('\r\n') +
 		"\r\n});";
 }
@@ -64,8 +64,7 @@ module.exports = function (options) {
 				this.emit('error', new Util.PluginError(PLUGIN_NAME, error));
 			}
 			try {
-				var moduleId = file.path.replace(file.base, '').replace(Path.extname(file.path), '').replace(Path.sep, '/' + (options.prefix || ''));
-				file.contents = new Buffer(compile(contents, moduleId, options));
+				file.contents = new Buffer(compile(contents, options));
 				this.push(file);
 				return callback();
 			}
